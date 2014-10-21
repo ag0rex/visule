@@ -46,7 +46,7 @@
       ((:board obj) obj graphics))    
     
     (doseq [[obj-key obj] drawable]
-      ((:draw obj) obj graphics))
+      ((:fn (:draw obj)) obj graphics))
 
     (doseq [[obj-key obj] cursors]
       ((:draw obj) obj graphics))    

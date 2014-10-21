@@ -1,0 +1,5 @@
+x       apply systems on game state
+        add system init function
+            each system gets to create its own state, which will be saved in the game state
+            e.g. put render frame object in game state
+        move systems to separate namespaces
