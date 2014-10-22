@@ -1,5 +1,17 @@
-x       apply systems on game state
-        add system init function
-            each system gets to create its own state, which will be saved in the game state
-            e.g. put render frame object in game state
-        move systems to separate namespaces
+x       apply systems on world state
+
+x       add system init function
+x       system dependencies -> system state (stored in world state)
+x           e.g. put render frame in system state
+x           note: system state should not change  
+
+x       move systems to separate namespaces
+
+        new size system
+
+        new move system
+
+        new render system
+
+        return values for system functions
+               diff / new state

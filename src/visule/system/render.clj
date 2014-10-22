@@ -3,7 +3,7 @@
            (java.awt Canvas Color GraphicsEnvironment Rectangle)
            (java.awt.event KeyListener MouseMotionListener)))
 
-(defn setup-frame [{on-keypress :on-keypress
+(defn- setup-frame [{on-keypress :on-keypress
                     on-keyrelease :on-keyrelease
                     on-mousemoved :on-mousemoved}]
   (let [frame (new JFrame "visule")
@@ -11,7 +11,7 @@
         ;; gd (. ge getDefaultScreenDevice)
         ]
     (doto frame
-      (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
+      (.setDefaultCloseOperation JFrame/DISPOSE_ON_CLOSE)
       (.setUndecorated false)
       (.setResizable true))
 
@@ -38,7 +38,7 @@
       (.show))
     frame))
 
-(defn system-render [frame boards drawable cursors]
+(defn- system-render [frame boards drawable cursors]
   (let [buffer (.getBufferStrategy frame)
         graphics (.getDrawGraphics buffer)]
 
@@ -52,4 +52,21 @@
       ((:draw obj) obj graphics))    
 
     (.dispose graphics)
-    (.show buffer)))
+    (.show buffer)
+
+    {}))
+
+(defn- filter-by-comp [objs comp-keyword]
+  (filter (comp comp-keyword val) objs))
+
+(defn- apply-fn [{entities :entities :as state} {frame :frame :as system-state}]
+  (let [boards (filter-by-comp entities :board)
+        drawable (filter-by-comp entities :draw)
+        cursors (filter-by-comp entities :cursor)]
+    (system-render frame boards drawable cursors)))
+
+(defn- get-frame [handlers]
+  (setup-frame handlers))
+
+(defn init [handlers]
+  {:fn apply-fn :state {:frame (get-frame handlers)}})
