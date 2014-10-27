@@ -9,7 +9,7 @@ x       move systems to separate namespaces
 
 x       new size system
 
-        new move system
+x       new move system
 
         new render system
 

@@ -1,7 +1,6 @@
 (ns visule.core
   (:require visule.system.input
             visule.system.move
-            visule.system.move2
             visule.system.size
             visule.system.regen
             visule.system.render
@@ -93,7 +92,6 @@
     {:pos {:x 375 :y 375}
      :vel {:speed (+ 1 (rand-int 3)) :direction (- 180 (rand-int 360))}
      :size {:size-fn #(- % 0.1) :value (+ 50 (rand-int 20))}
-     :update update-ball
      :draw {:fn draw-ball :shape :ball}
      :grows-on-overlap true}]
    (lazy-seq (random-objects))))
@@ -113,7 +111,7 @@
                })
    :systems [(visule.system.input/init input-keys)
              (visule.system.size/init)
-             (visule.system.move2/init)
+             (visule.system.move/init)
              (visule.system.regen/init #(< (:value (:size %)) 1) random-objects)
              (visule.system.render/init (handlers))]})
 
