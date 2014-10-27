@@ -2,10 +2,11 @@
   (:require [visule.util :refer [filter-by-comp]]))
 
 (defn- system-move [state]
-  (let [drawable (filter-by-comp (:entities state) :draw)]
-    (defn update-map-entry [[key entity]]
+  (defn update-map-entry [[key entity]]
       (let [update-fn (:update entity)]
-        [key (update-fn entity)]))  
+        [key (update-fn entity)]))
+
+  (let [drawable (filter-by-comp (:entities state) :draw)]      
     {:merge-entities (into {} (map update-map-entry drawable))}))
 
 (defn- apply-fn [state _]
