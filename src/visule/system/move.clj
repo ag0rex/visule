@@ -8,7 +8,7 @@
         [key (update-fn entity)]))  
     {:merge-entities (into {} (map update-map-entry drawable))}))
 
-(defn- apply-fn [state system-state]
+(defn- apply-fn [state _]
   (system-move state))
 
 (defn init []

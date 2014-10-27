@@ -3,12 +3,15 @@
 (defn- filter-by-comp [objs comp-keyword]
   (filter (comp comp-keyword val) objs))
 
-(defn- system-grow [state size-fn]
+(defn- system-size [state]
+  (defn update-size [[_ {{value :value size-fn :size-fn} :size} :as entity]]
+    (update-in entity [1 :size :value] size-fn))
+  
   (let [drawable (filter-by-comp (:entities state) :draw)]
-    {:merge-entities (into {} (map #(update-in % [1 :size] size-fn) drawable))}))
+    {:merge-entities (into {} (map update-size drawable))}))
 
-(defn- apply-fn [state {size-fn :size-fn :as system-state}]
-  (system-grow state size-fn))
+(defn- apply-fn [state _]
+  (system-size state))
 
-(defn init [size-fn]
-  {:fn apply-fn :state {:size-fn size-fn}})
+(defn init []
+  {:fn apply-fn})

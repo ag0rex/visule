@@ -7,7 +7,7 @@ x           note: system state should not change
 
 x       move systems to separate namespaces
 
-        new size system
+x       new size system
 
         new move system
 

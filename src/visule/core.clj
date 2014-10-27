@@ -75,18 +75,18 @@
     ;;   (collide entity axis))
     moved))
 
-(defn draw-ball [{{x :x y :y} :pos size :size :as ball} graphics]
+(defn draw-ball [{{x :x y :y} :pos {size :value} :size :as ball} graphics]
   ;; (.setColor graphics Color/YELLOW)
   ;; (.fillRect graphics 0 0 800 800)
   (.setColor graphics (get-color x y size))
   (.fillOval graphics x y size size))
 
-(defn cursor-draw [{{x :x y :y} :pos size :size :as cursor} graphics]
+(defn cursor-draw [{{x :x y :y} :pos {size :value} :size :as cursor} graphics]
   (when-not (or (nil? x) (nil? y))
     (.setColor graphics (Color. 0 0 0 50))
     (.fillRect graphics x y size size)))
 
-(defn board-draw [{{x :x y :y} :pos size :size :as cursor} graphics]
+(defn board-draw [{{x :x y :y} :pos {size :value} :size :as cursor} graphics]
   (when-not (or (nil? x) (nil? y))
     (.setColor graphics (Color. 0 0 0))
     (.fillRect graphics x y size size)))
@@ -138,7 +138,7 @@
    [(keyword (str (rand-int Integer/MAX_VALUE)))
     {:pos {:x 375 :y 375}
      :vel {:speed (+ 3 (rand-int 7)) :direction (- 180 (rand-int 360))}
-     :size (+ 50 (rand-int 20))
+     :size {:size-fn #(- % 1) :value (+ 50 (rand-int 20))}
      :update update-ball
      :draw {:fn draw-ball :shape :ball}
      :grows-on-overlap true}]
@@ -150,7 +150,7 @@
    :entities (merge
               (into {} (take 200 (random-objects)))
               {:board {:pos {:x 0 :y 0}
-                       :size 800
+                       :size {:size-fn identity :value 800}
                        :board board-draw}
                ;; :cursor {:pos {:x 50 :y 50}
                ;;          :cursor true
@@ -158,9 +158,9 @@
                ;;          :draw cursor-draw}
                })
    :systems [(visule.system.input/init input-keys)
-             (visule.system.size/init #(- % 1))
+             (visule.system.size/init)
              (visule.system.move/init)
-             (visule.system.regen/init #(< (:size %) 1) random-objects)
+             (visule.system.regen/init #(< (:value (:size %)) 1) random-objects)
              (visule.system.render/init (handlers))]})
 
 (defn run []
