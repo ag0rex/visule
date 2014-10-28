@@ -67,9 +67,14 @@
   (filter (comp comp-keyword val) objs))
 
 (defn- apply-fn [{entities :entities :as state} {frame :frame :as system-state}]
-  (let [drawable (filter-by-comp entities :draw)
-        sorted-by-z (sort-by (comp :z :draw #(get % 1)) drawable)]
-    (system-render frame sorted-by-z)))
+  (if-not (:loop-state state)
+    (doto frame
+      (.hide)
+      (.dispose))
+    
+    (let [drawable (filter-by-comp entities :draw)
+          sorted-by-z (sort-by (comp :z :draw #(get % 1)) drawable)]
+      (system-render frame sorted-by-z))))
 
 (defn- get-frame [handlers]
   (setup-frame handlers))

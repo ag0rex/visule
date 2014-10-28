@@ -39,7 +39,7 @@
     {:pos {:x 375 :y 375}
      :vel {:speed (+ 1 (rand-int 3)) :direction (- 180 (rand-int 360))}
      :size {:fn #(- % 0.1) :value (+ 50 (rand-int 20))}
-     :draw {:shape :circle :color get-color :z 1}}]
+     :draw {:shape (rand-nth [:circle :square]) :color get-color :z 1}}]
    (lazy-seq (random-objects))))
 
 (defn init-state []

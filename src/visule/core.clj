@@ -14,10 +14,7 @@
 
 (defn do-loop [state]
   (if-not (:loop-state state)
-    (prn "STOPPED")
-    ;; (doto frame
-    ;;   (.hide)
-    ;;   (.dispose))
+    (prn "Stopped!")
 
     (let [start-time (System/currentTimeMillis)
           state (reduce apply-system state (:systems state))]
