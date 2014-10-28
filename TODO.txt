@@ -11,7 +11,7 @@ x       new size system
 
 x       new move system
 
-        new render system
+x       new render system
 
         return values for system functions
                diff / new state

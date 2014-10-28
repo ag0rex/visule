@@ -4,7 +4,7 @@
             visule.system.size
             visule.system.regen
             visule.system.render
-            [visule.util :refer [filter-by-comp]]
+            [visule.util :refer [filter-by-comp filter-map]]
             [clojure.tools.namespace.repl :refer [refresh]])
   (:import (java.awt Canvas Color GraphicsEnvironment Rectangle)))
 
@@ -19,38 +19,6 @@
 
 (defn on-mousemoved [x y]
   (swap! input-mouse assoc :x x :y y))
-
-(defn get-color
-  [x y size]
-  (Color. 155
-          (min 255
-               (int (* 255 (/ (+ (Math/abs (- 400 x)) (Math/abs (- 400 y))) 800))))
-          0
-          100))
-
-(defn draw-ball [{{x :x y :y} :pos {size :value} :size :as ball} graphics]
-  ;; (.setColor graphics Color/YELLOW)
-  ;; (.fillRect graphics 0 0 800 800)
-  (.setColor graphics (get-color x y size))
-  (.fillOval graphics x y size size))
-
-(defn cursor-draw [{{x :x y :y} :pos {size :value} :size :as cursor} graphics]
-  (when-not (or (nil? x) (nil? y))
-    (.setColor graphics (Color. 0 0 0 50))
-    (.fillRect graphics x y size size)))
-
-(defn board-draw [{{x :x y :y} :pos {size :value} :size :as cursor} graphics]
-  (when-not (or (nil? x) (nil? y))
-    (.setColor graphics (Color. 0 0 0))
-    (.fillRect graphics x y size size)))
-
-(defn system-follow-mouse [obj-map]
-  (zipmap
-   (keys obj-map)
-   (map #(assoc-in % [:pos] {:x (:x @input-mouse) :y (:y @input-mouse)}) (vals obj-map))))
-
-(defn filter-map [pred map]
-  (select-keys map (for [[k v :as entry] map :when (pred entry)] k)))
 
 ;; TODO: Find a better way to return changes from systems, or maybe return a new
 ;; world state.
@@ -86,14 +54,20 @@
    :on-keyrelease on-keyrelease
    :on-mousemoved on-mousemoved})
 
+(defn get-color [{{x :x y :y} :pos :as entity}]
+  (Color. 155
+          (min 255
+               (int (* 255 (/ (+ (Math/abs (- 400 x)) (Math/abs (- 400 y))) 800))))
+          0
+          100))
+
 (defn random-objects []
   (cons
    [(keyword (str (rand-int Integer/MAX_VALUE)))
     {:pos {:x 375 :y 375}
      :vel {:speed (+ 1 (rand-int 3)) :direction (- 180 (rand-int 360))}
-     :size {:size-fn #(- % 0.1) :value (+ 50 (rand-int 20))}
-     :draw {:fn draw-ball :shape :ball}
-     :grows-on-overlap true}]
+     :size {:fn #(- % 0.1) :value (+ 50 (rand-int 20))}
+     :draw {:shape :circle :color get-color :z 1}}]
    (lazy-seq (random-objects))))
 
 (defn init-state []
@@ -102,13 +76,8 @@
    :entities (merge
               (into {} (take 200 (random-objects)))
               {:board {:pos {:x 0 :y 0}
-                       :size {:size-fn identity :value 800}
-                       :board board-draw}
-               ;; :cursor {:pos {:x 50 :y 50}
-               ;;          :cursor true
-               ;;          :size 100
-               ;;          :draw cursor-draw}
-               })
+                       :size {:fn identity :value 800}
+                       :draw {:shape :square :color (Color. 0 0 0) :z 0}}})
    :systems [(visule.system.input/init input-keys)
              (visule.system.size/init)
              (visule.system.move/init)

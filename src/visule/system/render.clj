@@ -38,19 +38,26 @@
       (.show))
     frame))
 
-(defn- system-render [frame boards drawable cursors]
+(defn- get-color [color-component entity]
+  (if (fn? color-component)
+    (color-component entity)
+    color-component))
+
+(defn- draw-entity [{{x :x y :y} :pos
+                     {size :value} :size
+                     {color :color shape :shape} :draw :as entity} graphics]
+  (.setColor graphics (get-color color entity))
+  (case shape
+    :square (.fillRect graphics x y size size)
+    :circle (.fillOval graphics x y size size)))
+
+(defn- system-render [frame drawable]
   (let [buffer (.getBufferStrategy frame)
         graphics (.getDrawGraphics buffer)]
-
-    (doseq [[obj-key obj] boards]
-      ((:board obj) obj graphics))    
     
-    (doseq [[obj-key obj] drawable]
-      ((:fn (:draw obj)) obj graphics))
-
-    (doseq [[obj-key obj] cursors]
-      ((:draw obj) obj graphics))    
-
+    (doseq [[_ obj] drawable]
+      (draw-entity obj graphics))
+    
     (.dispose graphics)
     (.show buffer)
 
@@ -60,10 +67,9 @@
   (filter (comp comp-keyword val) objs))
 
 (defn- apply-fn [{entities :entities :as state} {frame :frame :as system-state}]
-  (let [boards (filter-by-comp entities :board)
-        drawable (filter-by-comp entities :draw)
-        cursors (filter-by-comp entities :cursor)]
-    (system-render frame boards drawable cursors)))
+  (let [drawable (filter-by-comp entities :draw)
+        sorted-by-z (sort-by (comp :z :draw #(get % 1)) drawable)]
+    (system-render frame sorted-by-z)))
 
 (defn- get-frame [handlers]
   (setup-frame handlers))

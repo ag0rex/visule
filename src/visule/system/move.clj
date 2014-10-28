@@ -34,7 +34,9 @@
   (let [reflected (assoc obj :vel {:speed speed :direction (reflect-with-wobble direction axis)})]
     (merge reflected (move reflected))))
 
-(defn- hit-bounds? [{{x :x y :y} :pos {size :value} :size} {width :width height :height}]
+(defn- hit-bounds? [{{x :x y :y} :pos
+                     {size :value} :size}
+                    {width :width height :height}]
   (let [x-hit (or (>= 0 x)
                   (>= x (- width size)))
         y-hit (or (>= 0 y)
@@ -54,8 +56,8 @@
   (defn update-map-entry [[key entity]]
     [key (update entity)])
   
-  (let [drawable (filter-by-comp (:entities state) :draw)]      
-    {:merge-entities (into {} (map update-map-entry drawable))}))
+  (let [movable (filter-by-comp (:entities state) :vel)]
+    {:merge-entities (into {} (map update-map-entry movable))}))
 
 (defn- apply-fn [state system-state]
   (system-move state))
