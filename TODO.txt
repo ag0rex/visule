@@ -13,5 +13,13 @@ x       new move system
 
 x       new render system
 
+        collision to be part of the move component
+
+        time-based generation of entities
+        
+        event-based generation of entities
+
+        system for removal
+
         return values for system functions
                diff / new state
