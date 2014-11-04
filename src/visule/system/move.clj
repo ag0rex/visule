@@ -30,8 +30,8 @@
   (let [[dx dy] (vel-to-dxy speed (deg->rad direction))]
     {:pos {:x (+ dx x) :y (+ y dy)}}))
 
-(defn- collide [{{speed :speed direction :direction} :vel :as obj} axis]
-  (let [reflected (assoc obj :vel {:speed speed :direction (reflect-with-wobble direction axis)})]
+(defn- collide [{{direction :direction} :vel :as obj} axis]
+  (let [reflected (update-in obj [:vel :direction] #(reflect-with-wobble % axis))]
     (merge reflected (move reflected))))
 
 (defn- hit-bounds? [{{x :x y :y} :pos
@@ -46,10 +46,12 @@
      x-hit :x
      y-hit :y)))
 
-(defn- update [entity]
+(defn- update [{{collides :collides} :vel :as entity}]
   (let [moved (merge entity (move entity))]
-    (if-let [axis (hit-bounds? moved {:width 800 :height 800})]
-      (collide entity axis)
+    (if collides
+      (if-let [axis (hit-bounds? moved {:width 800 :height 800})]
+        (collide entity axis)
+        moved)
       moved)))
 
 (defn- system-move [state]

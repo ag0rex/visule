@@ -37,23 +37,42 @@
   (cons
    [(keyword (str (rand-int Integer/MAX_VALUE)))
     {:pos {:x 375 :y 375}
-     :vel {:speed (+ 1 (rand-int 3)) :direction (- 180 (rand-int 360))}
+     :vel {:speed (+ 1 (rand-int 3)) :direction (- 180 (rand-int 360)) :collides true}
      :size {:fn #(- % 0.1) :value (+ 50 (rand-int 20))}
      :draw {:shape (rand-nth [:circle :square]) :color get-color :z 1}}]
    (lazy-seq (random-objects))))
+
+(def boo
+  {:one {:pos {:x 200 :y 200}
+         :vel {:speed 0 :direction 0}
+         :size {:fn identity :value 100}
+         :draw {:shape :square :color (Color. 255 15 152) :z 10}}
+   :two {:pos {:x 400 :y 200}
+         :vel {:speed 0 :direction 0}
+         :size {:fn identity :value 100}
+         :draw {:shape :square :color (Color. 255 15 152) :z 10}}
+   :thr {:pos {:x 200 :y 400}
+         :vel {:speed 0 :direction 0}
+         :size {:fn identity :value 100}
+         :draw {:shape :square :color (Color. 255 15 152) :z 10}}
+   :fou {:pos {:x 400 :y 400}
+         :vel {:speed 0 :direction 0}
+         :size {:fn identity :value 100}
+         :draw {:shape :square :color (Color. 255 15 152) :z 10}}})
 
 (defn init-state []
   {:loop-state true
    :frame-time (/ 1000 60)
    :entities (merge
-              (into {} (take 200 (random-objects)))
+              (into {} (take 50 (random-objects)))
+              ;; boo              
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
-                       :draw {:shape :square :color (Color. 0 0 0) :z 0}}})
+                       :draw {:shape :square :color (Color. 50 50 50) :z 0}}})
    :systems [(visule.system.input/init input-keys)
              (visule.system.size/init)
              (visule.system.move/init)
-             (visule.system.regen/init #(< (:value (:size %)) 1) random-objects)
+             (visule.system.regen/init #(< 1000 (:value (:size %))) random-objects)
              (visule.system.render/init (handlers))]})
 
 (defn run []
