@@ -16,12 +16,14 @@ x       new render system
 x       collision to be part of the move component
 
         time-based generation of entities
+x           interval system
+            timeout system
         
+        return values for system functions
+               diff / new state
+
         event-based generation of entities
 
         split regen system
               system for removal
               system for generation
-
-        return values for system functions
-               diff / new state

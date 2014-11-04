@@ -5,6 +5,7 @@
             visule.system.size
             visule.system.regen
             visule.system.render
+            visule.system.interval
             [visule.util :refer [filter-by-comp filter-map]]
             [clojure.tools.namespace.repl :refer [refresh]])
   (:import (java.awt Color)))
@@ -64,16 +65,19 @@
   {:loop-state true
    :frame-time (/ 1000 60)
    :entities (merge
-              (into {} (take 50 (random-objects)))
+              ;; (into {} (take 50 (random-objects)))
               ;; boo              
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
                        :draw {:shape :square :color (Color. 50 50 50) :z 0}}})
-   :systems [(visule.system.input/init input-keys)
-             (visule.system.size/init)
-             (visule.system.move/init)
-             (visule.system.regen/init #(< 1000 (:value (:size %))) random-objects)
-             (visule.system.render/init (handlers))]})
+   :systems {:input (visule.system.input/init input-keys)
+             :size (visule.system.size/init)
+             :move (visule.system.move/init)
+             :regen (visule.system.regen/init #(< (:value (:size %)) 1) random-objects)
+             :render (visule.system.render/init (handlers))
+             :interval (visule.system.interval/init 2000 random-objects)}   
+   :systems-order [:input :size :move :regen :render :interval]
+   })
 
 (defn run []
   (let [state (init-state)
