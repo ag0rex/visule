@@ -43,39 +43,63 @@
      :draw {:shape (rand-nth [:circle :square]) :color get-color :z 1}}]
    (lazy-seq (random-objects))))
 
+(defn colored-circles [color z]
+  (cons
+   [(keyword (str (rand-int Integer/MAX_VALUE)))
+    {:pos {:x 300 :y 300}
+     :vel {:speed 1 :direction 230 :collides false}
+     :size {:fn #(+ % 2) :value 0}
+     :draw {:shape :circle :color color :z z}}]
+   (lazy-seq (colored-circles color (+ z 2)))))
+
+(defn yellow-magenta [] (interleave (colored-circles (Color. 255 0 255) 0)
+                                    (colored-circles (Color. 255 255 0) 1)))
+
+(defn random-shapes []
+  (cons
+   [(keyword (str (rand-int Integer/MAX_VALUE)))
+    {:pos {:x (rand-int 800) :y (rand-int 800)}
+     :vel {:speed 0 :direction 230 :collides false}
+     :size {:fn identity :value (rand-int 20)}
+     :draw {:shape :circle :color (Color. (rand-int 255) (rand-int 255) (rand-int 255)) :z 100000}}]
+   (lazy-seq (random-shapes))))
+
 (def boo
-  {:one {:pos {:x 200 :y 200}
+  {;; :one {:pos {:x 250 :y 250}
+   ;;       :vel {:speed 0 :direction 0}
+   ;;       :size {:fn identity :value 100}
+   ;;       :draw {:shape :circle :color (Color. 55 15 252) :z 10000}}
+   :two {:pos {:x 450 :y 250}
          :vel {:speed 0 :direction 0}
          :size {:fn identity :value 100}
-         :draw {:shape :square :color (Color. 255 15 152) :z 10}}
-   :two {:pos {:x 400 :y 200}
+         :draw {:shape :square :color (Color. 0 0 0) :z 10000}}
+   :thr {:pos {:x 250 :y 450}
          :vel {:speed 0 :direction 0}
          :size {:fn identity :value 100}
-         :draw {:shape :square :color (Color. 255 15 152) :z 10}}
-   :thr {:pos {:x 200 :y 400}
+         :draw {:shape :square :color (Color. 0 0 0) :z 10000}}
+   :fou {:pos {:x 450 :y 450}
          :vel {:speed 0 :direction 0}
          :size {:fn identity :value 100}
-         :draw {:shape :square :color (Color. 255 15 152) :z 10}}
-   :fou {:pos {:x 400 :y 400}
-         :vel {:speed 0 :direction 0}
-         :size {:fn identity :value 100}
-         :draw {:shape :square :color (Color. 255 15 152) :z 10}}})
+         :draw {:shape :circle :color (Color. 0 0 0) :z 10000}}})
 
 (defn init-state []
   {:loop-state true
    :frame-time (/ 1000 60)
    :entities (merge
               ;; (into {} (take 50 (random-objects)))
-              ;; boo              
+              (into {} (take 50 (random-shapes)))
+              boo              
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
                        :draw {:shape :square :color (Color. 50 50 50) :z 0}}})
    :systems {:input (visule.system.input/init input-keys)
              :size (visule.system.size/init)
              :move (visule.system.move/init)
-             :regen (visule.system.regen/init #(< (:value (:size %)) 1) random-objects)
+             :regen (visule.system.regen/init
+                     #(and (not= 800 (:value (:size %)))
+                           (< 1000 (:value (:size %)))) (fn [] nil))
              :render (visule.system.render/init (handlers))
-             :interval (visule.system.interval/init 2000 random-objects)}   
+             :interval (visule.system.interval/init 2000 yellow-magenta)}
    :systems-order [:input :size :move :regen :render :interval]
    })
 
