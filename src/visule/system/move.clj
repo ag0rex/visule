@@ -55,10 +55,9 @@
       moved)))
 
 (defn- system-move [state]
-  (defn update-map-entry [[key entity]]
-    [key (update entity)])
-  
-  (let [movable (filter-by-comp (:entities state) :vel)]
+  (let [update-map-entry (fn [[key entity]]
+                           [key (update entity)])
+        movable (filter-by-comp (:entities state) :vel)]
     {:merge-entities (into {} (map update-map-entry movable))}))
 
 (defn- apply-fn [state system-state]
