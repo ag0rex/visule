@@ -8,7 +8,8 @@
             visule.system.interval
             [visule.util :refer [filter-by-comp filter-map]]
             [clojure.tools.namespace.repl :refer [refresh]])
-  (:import (java.awt Color)))
+  (:import (java.awt Color))
+  (:gen-class))
 
 (def input-keys (atom {}))
 (def input-mouse (atom {}))
@@ -52,8 +53,8 @@
      :draw {:shape :circle :color color :z z}}]
    (lazy-seq (colored-circles color (+ z 2)))))
 
-(defn yellow-magenta [] (interleave (colored-circles (Color. 255 0 255) 0)
-                                    (colored-circles (Color. 255 255 0) 1)))
+(defn yellow-magenta [] (interleave (colored-circles (Color. 255 0 255 150) 0)
+                                    (colored-circles (Color. 255 255 0 150) 1)))
 
 (defn random-shapes []
   (cons
@@ -88,7 +89,7 @@
    :entities (merge
               ;; (into {} (take 50 (random-objects)))
               (into {} (take 500 (random-shapes)))
-              boo              
+              boo
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
                        :draw {:shape :square :color (Color. 50 50 50) :z 0}}})
@@ -122,5 +123,4 @@
   (refresh :after 'visule.demo/run))
 
 (defn -main [& args]
-  (set! *warn-on-reflection* true)
   (run))
