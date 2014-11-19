@@ -59,9 +59,9 @@
   (cons
    [(keyword (str (rand-int Integer/MAX_VALUE)))
     {:pos {:x (rand-int 800) :y (rand-int 800)}
-     :vel {:speed 0 :direction 230 :collides false}
-     :size {:fn identity :value (rand-int 20)}
-     :draw {:shape :circle :color (Color. (rand-int 255) (rand-int 255) (rand-int 255)) :z 100000}}]
+     :vel {:speed 1 :direction (rand-int 360) :collides true}
+     :size {:fn identity :value (+ 5 (rand-int 20))}
+     :draw {:shape :circle :color (Color. (rand-int 255) (rand-int 255) (rand-int 255) 150) :z 100000}}]
    (lazy-seq (random-shapes))))
 
 (def boo
@@ -72,22 +72,22 @@
    :two {:pos {:x 450 :y 250}
          :vel {:speed 0 :direction 0}
          :size {:fn identity :value 100}
-         :draw {:shape :square :color (Color. 0 0 0) :z 10000}}
+         :draw {:shape :square :color (Color. 0 0 0 20) :z 10000}}
    :thr {:pos {:x 250 :y 450}
          :vel {:speed 0 :direction 0}
          :size {:fn identity :value 100}
-         :draw {:shape :square :color (Color. 0 0 0) :z 10000}}
+         :draw {:shape :square :color (Color. 0 0 0 20) :z 10000}}
    :fou {:pos {:x 450 :y 450}
          :vel {:speed 0 :direction 0}
          :size {:fn identity :value 100}
-         :draw {:shape :circle :color (Color. 0 0 0) :z 10000}}})
+         :draw {:shape :circle :color (Color. 0 0 0 20) :z 10000}}})
 
 (defn init-state []
   {:loop-state true
    :frame-time (/ 1000 60)
    :entities (merge
               ;; (into {} (take 50 (random-objects)))
-              (into {} (take 50 (random-shapes)))
+              (into {} (take 500 (random-shapes)))
               boo              
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
@@ -99,7 +99,7 @@
                      #(and (not= 800 (:value (:size %)))
                            (< 1000 (:value (:size %)))) (fn [] nil))
              :render (visule.system.render/init (handlers))
-             :interval (visule.system.interval/init 2000 yellow-magenta)}
+             :interval (visule.system.interval/init 500 yellow-magenta)}
    :systems-order [:input :size :move :regen :render :interval]
    })
 
@@ -122,4 +122,5 @@
   (refresh :after 'visule.demo/run))
 
 (defn -main [& args]
+  (set! *warn-on-reflection* true)
   (run))
