@@ -4,8 +4,9 @@
   (filter (comp comp-keyword val) objs))
 
 (defn- system-size [state]
-  (let [update-size (fn [[_ {{value :value size-fn :fn} :size} :as entity]]
-                      (update-in entity [1 :size :value] size-fn))
+  (let [update-size (fn [[key {{value :value size-fn :fn} :size :as entity}]]
+                      (let [new-size (size-fn value)]
+                        [key (assoc-in entity [:size :value] new-size)]))
         drawable (filter-by-comp (:entities state) :draw)]
     {:merge-entities (into {} (map update-size drawable))}))
 
