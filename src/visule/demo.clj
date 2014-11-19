@@ -53,8 +53,8 @@
      :draw {:shape :circle :color color :z z}}]
    (lazy-seq (colored-circles color (+ z 2)))))
 
-(defn yellow-magenta [] (interleave (colored-circles (Color. 255 0 255 150) 0)
-                                    (colored-circles (Color. 255 255 0 150) 1)))
+(defn yellow-magenta [] (interleave (colored-circles (Color. 255 0 255 150) 1)
+                                    (colored-circles (Color. 255 255 0 150) 2)))
 
 (defn random-shapes []
   (cons
@@ -88,7 +88,7 @@
    :frame-time (/ 1000 60)
    :entities (merge
               ;; (into {} (take 50 (random-objects)))
-              (into {} (take 500 (random-shapes)))
+              ;; (into {} (take 500 (random-shapes)))
               boo
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
@@ -100,8 +100,9 @@
                      #(and (not= 800 (:value (:size %)))
                            (< 1000 (:value (:size %)))) (fn [] nil))
              :render (visule.system.render/init (handlers))
-             :interval (visule.system.interval/init 500 yellow-magenta)}
-   :systems-order [:input :size :move :regen :render :interval]
+             :interval (visule.system.interval/init 1500 yellow-magenta :interval)
+             :interval-2 (visule.system.interval/init 500 random-shapes :interval-2)}
+   :systems-order [:input :size :move :regen :render :interval :interval-2]
    })
 
 (defn run []
