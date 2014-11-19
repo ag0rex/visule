@@ -11,4 +11,4 @@
    {}
    :dev
    {;; :source-paths ["dev"]
-    :dependencies [[org.clojure/tools.namespace "0.2.5"]]}})
+    :dependencies [[org.clojure/tools.namespace "0.2.7"]]}})
