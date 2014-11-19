@@ -45,15 +45,16 @@
 
 (defn- draw-entity [{{x :x y :y} :pos
                      {size :value} :size
-                     {color :color shape :shape} :draw :as entity} graphics]
+                     {color :color shape :shape} :draw :as entity}
+                    ^java.awt.Graphics graphics]
   (.setColor graphics (get-color color entity))
   (case shape
     :square (.fillRect graphics x y size size)
     :circle (.fillOval graphics x y size size)))
 
-(defn- system-render [frame drawable]
-  (let [buffer (.getBufferStrategy frame)
-        graphics (.getDrawGraphics buffer)]
+(defn- system-render [^java.awt.Frame frame drawable]
+  (let [^java.awt.image.BufferStrategy buffer (.getBufferStrategy frame)
+        ^java.awt.Graphics graphics (.getDrawGraphics buffer)]
     
     (doseq [[_ obj] drawable]
       (draw-entity obj graphics))
