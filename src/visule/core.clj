@@ -1,5 +1,5 @@
 (ns visule.core
-  (:require [visule.util :refer (filter-map)]))
+  (:require [visule.util :refer (remove-keys)]))
 
 ;; TODO: Find a better way to return changes from systems, or maybe return a new
 ;; world state.
@@ -11,7 +11,7 @@
     (-> state
         (merge state-to-merge)
         (update-in [:entities] merge entities-to-merge)
-        (update-in [:entities] (partial filter-map #((complement contains?) entities-to-remove (key %))))
+        (update-in [:entities] remove-keys (seq entities-to-remove))
         (update-in [:systems] merge systems-to-merge)
         )))
 

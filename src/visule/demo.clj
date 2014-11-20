@@ -6,7 +6,7 @@
             visule.system.regen
             visule.system.render
             visule.system.interval
-            [visule.util :refer [filter-by-comp filter-map]]
+            [visule.util :refer [filter-by-comp]]
             [clojure.tools.namespace.repl :refer [refresh]])
   (:import (java.awt Color))
   (:gen-class))
@@ -98,10 +98,11 @@
              :move (visule.system.move/init)
              :regen (visule.system.regen/init
                      #(and (not= 800 (:value (:size %)))
-                           (< 1000 (:value (:size %)))) (fn [] nil))
+                           (< 1000 (:value (:size %))))
+                     (fn [] nil))
              :render (visule.system.render/init (handlers))
-             :interval (visule.system.interval/init 1500 yellow-magenta :interval)
-             :interval-2 (visule.system.interval/init 500 random-shapes :interval-2)}
+             :interval (visule.system.interval/init 150 yellow-magenta :interval)
+             :interval-2 (visule.system.interval/init 50 random-shapes :interval-2)}
    :systems-order [:input :size :move :regen :render :interval :interval-2]
    })
 
