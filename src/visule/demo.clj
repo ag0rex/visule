@@ -6,6 +6,7 @@
             visule.system.regen
             visule.system.render
             visule.system.interval
+            visule.system.minim
             [visule.util :refer [filter-by-comp]]
             [clojure.tools.namespace.repl :refer [refresh]])
   (:import (java.awt Color))
@@ -53,8 +54,22 @@
      :draw {:shape :circle :color color :z z}}]
    (lazy-seq (colored-circles color (+ z 2)))))
 
-(defn yellow-magenta [] (interleave (colored-circles (Color. 255 0 255 150) 1)
-                                    (colored-circles (Color. 255 255 0 150) 2)))
+(defn beat-circles [color z]
+  (cons
+   [(keyword (str (rand-int Integer/MAX_VALUE)))
+    {:pos {:x (+ 340 (rand-int 20))
+           :y (+ 340 (rand-int 20))}
+     :vel {:speed 3 :direction (quot (System/currentTimeMillis) 2) :collides false}
+     :size {:fn #(- % 1) :value 100}
+     :draw {:shape :circle :color color :z z}}]
+   (lazy-seq (beat-circles (Color. (+ 100 (rand-int 155))
+                                   (rand-int 255)
+                                   (rand-int 255)
+                                   (+ 150 (rand-int 55)))
+                           (+ z 2)))))
+
+(defn yellow-magenta [] (interleave (beat-circles (Color. 255 255 255 150) 1)
+                                    (beat-circles (Color. 0 0 0 150) 2)))
 
 (defn random-shapes []
   (cons
@@ -92,18 +107,20 @@
               boo
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
-                       :draw {:shape :square :color (Color. 50 50 50) :z 0}}})
+                       :draw {:shape :square :color (Color. 0 10 10) :z 0}}})
    :systems {:input (visule.system.input/init input-keys)
              :size (visule.system.size/init)
              :move (visule.system.move/init)
              :regen (visule.system.regen/init
                      #(and (not= 800 (:value (:size %)))
-                           (< 1000 (:value (:size %))))
+                           (> 0 (:value (:size %))))
                      (fn [] nil))
              :render (visule.system.render/init (handlers))
-             :interval (visule.system.interval/init 150 yellow-magenta :interval)
-             :interval-2 (visule.system.interval/init 50 random-shapes :interval-2)}
-   :systems-order [:input :size :move :regen :render :interval :interval-2]
+             ;; :interval (visule.system.interval/init 150 yellow-magenta :interval)
+             ;; :interval-2 (visule.system.interval/init 50 random-shapes :interval-2)
+             :minim (visule.system.minim/init "/Users/andrei/Music/mtn.mp3" yellow-magenta :minim)}
+   :systems-order [:input :size :move :regen :render :minim ;; :interval :interval-2
+                   ]
    })
 
 (defn run []
