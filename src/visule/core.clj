@@ -1,5 +1,5 @@
 (ns visule.core
-  (:require [visule.util :refer (remove-keys)]))
+  (:require [visule.util :refer [remove-keys]]))
 
 ;; TODO: Find a better way to return changes from systems, or maybe return a new
 ;; world state.
@@ -12,13 +12,17 @@
         (merge state-to-merge)
         (update-in [:entities] merge entities-to-merge)
         (update-in [:entities] remove-keys (seq entities-to-remove))
-        (update-in [:systems] merge systems-to-merge)
-        )))
+        (update-in [:systems] merge systems-to-merge))))
 
 (defn do-loop [state]
   (if-not (:loop-state state)
-    (prn "Stopped!")
+    ;; Call stop functions for all systems.
+    (let [systems (:systems state)]
+      (doseq [[_ system-state] systems]
+        (when-let [stop-fn (:stop-fn system-state)]
+          (stop-fn))))
 
+    ;; Or apply systems on world state.
     (let [start-time (System/currentTimeMillis)
           ordered-systems (map #(% (:systems state)) (:systems-order state))
           state (reduce apply-system state ordered-systems)]

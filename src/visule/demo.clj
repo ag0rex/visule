@@ -8,9 +8,10 @@
             visule.system.interval
             visule.system.minim
             [visule.util :refer [filter-by-comp]]
-            [clojure.tools.namespace.repl :refer [refresh]])
+            [clojure.tools.namespace.repl :refer [refresh refresh-all]])
   (:import (java.awt Color))
-  (:gen-class))
+  ;; (:gen-class)
+  )
 
 (def input-keys (atom {}))
 (def input-mouse (atom {}))
@@ -57,15 +58,15 @@
 (defn beat-circles [color z]
   (cons
    [(keyword (str (rand-int Integer/MAX_VALUE)))
-    {:pos {:x (+ 340 (rand-int 20))
-           :y (+ 340 (rand-int 20))}
+    {:pos {:x (+ 320 (rand-int 20))
+           :y (+ 320 (rand-int 20))}
      :vel {:speed 3 :direction (quot (System/currentTimeMillis) 2) :collides false}
-     :size {:fn #(- % 1) :value 100}
+     :size {:fn #(- % 1) :value 140}
      :draw {:shape :circle :color color :z z}}]
-   (lazy-seq (beat-circles (Color. (+ 100 (rand-int 155))
+   (lazy-seq (beat-circles (Color. (+ 150 (rand-int 105))
                                    (rand-int 255)
                                    (rand-int 255)
-                                   (+ 150 (rand-int 55)))
+                                   (+ 50 (rand-int 55)))
                            (+ z 2)))))
 
 (defn yellow-magenta [] (interleave (beat-circles (Color. 255 255 255 150) 1)
@@ -107,7 +108,7 @@
               boo
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
-                       :draw {:shape :square :color (Color. 0 10 10) :z 0}}})
+                       :draw {:shape :square :color (Color. 20 10 30) :z 0}}})
    :systems {:input (visule.system.input/init input-keys)
              :size (visule.system.size/init)
              :move (visule.system.move/init)
@@ -115,13 +116,12 @@
                      #(and (not= 800 (:value (:size %)))
                            (> 0 (:value (:size %))))
                      (fn [] nil))
-             :render (visule.system.render/init (handlers))
+             :render (visule.system.render/init handlers)
              ;; :interval (visule.system.interval/init 150 yellow-magenta :interval)
              ;; :interval-2 (visule.system.interval/init 50 random-shapes :interval-2)
-             :minim (visule.system.minim/init "/Users/andrei/Music/mtn.mp3" yellow-magenta :minim)}
+             :minim (visule.system.minim/init "/Users/andrei/Music/lilly.mp3" yellow-magenta :minim)}
    :systems-order [:input :size :move :regen :render :minim ;; :interval :interval-2
-                   ]
-   })
+                   ]})
 
 (defn run []
   (let [state (init-state)
@@ -131,7 +131,6 @@
 
 (defn stop
   "Simulates a key press in order to stop the world loop."
-  ;; TODO: Broken.
   []
   (swap! input-keys assoc :q true))
 
