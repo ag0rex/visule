@@ -1,37 +1,36 @@
-x       apply systems on world state
++ apply systems on world state
 
-x       add system init function
-x       system dependencies -> system state (stored in world state)
-x         e.g. put render frame in system state
-x         note: system state should not change  
++ add system init function
 
-x       move systems to separate namespaces
++ system dependencies -> system state (stored in world state)
++   e.g. put render frame in system state
+    note: system state should not change  
 
-x       new size system
++ move systems to separate namespaces
 
-x       new move system
++ new size system
++ new move system
++ new render system
 
-x       new render system
++ collision to be part of the move component
 
-x       collision to be part of the move component
+- split regen system
+  - system for removal
+  - system for generation
 
-        split regen system
-          system for removal
-          system for generation
+- return values for system functions
+  - decide on diff / new state
 
-        return values for system functions
-          diff / new state
+- add protocol for systems
 
-        add protocol for systems
+- add records for components
 
-        add records for components
+- event-based generation of entities
+  - mutable source of events
 
-        event-based generation of entities
-          mutable source of events
+- macro to add systems
+  - would allow injection of system key
 
-        macro to add systems
-          would allow injection of system key
-
-        time-based generation of entities
-x         interval system
-          timeout system
+- time-based generation of entities
+  + interval system
+  - timeout system
