@@ -58,19 +58,25 @@
 (defn beat-circles [color z]
   (cons
    [(keyword (str (rand-int Integer/MAX_VALUE)))
-    {:pos {:x (+ 320 (rand-int 20))
-           :y (+ 320 (rand-int 20))}
-     :vel {:speed 3 :direction (quot (System/currentTimeMillis) 2) :collides false}
-     :size {:fn #(- % 1) :value 140}
-     :draw {:shape :circle :color color :z z}}]
+    {:pos {:x (+ 370 (rand-int 20))
+           :y (+ 370 (rand-int 20))}
+     :vel {:speed 3
+           :direction (quot (System/currentTimeMillis) 2)
+           :collides false}
+     :size {:fn #(- % 1)
+            :value 140}
+     :draw {:shape :circle
+            :color color
+            :z z}}]
    (lazy-seq (beat-circles (Color. (+ 150 (rand-int 105))
+                                   (+ 150 (rand-int 105))
                                    (rand-int 255)
-                                   (rand-int 255)
-                                   (+ 50 (rand-int 55)))
+                                   (+ 0 (rand-int 55)))
                            (+ z 2)))))
 
 (defn yellow-magenta [] (interleave (beat-circles (Color. 255 255 255 150) 1)
-                                    (beat-circles (Color. 0 0 0 150) 2)))
+                                    (beat-circles (Color. 0 0 0 150) 2)
+                                    ))
 
 (defn random-shapes []
   (cons
@@ -105,10 +111,10 @@
    :entities (merge
               ;; (into {} (take 50 (random-objects)))
               ;; (into {} (take 500 (random-shapes)))
-              boo
+              ;;boo
               {:board {:pos {:x 0 :y 0}
                        :size {:fn identity :value 800}
-                       :draw {:shape :square :color (Color. 20 10 30) :z 0}}})
+                       :draw {:shape :square :color (Color. 20 10 30 5) :z 0}}})
    :systems {:input (visule.system.input/init input-keys)
              :size (visule.system.size/init)
              :move (visule.system.move/init)
@@ -124,9 +130,8 @@
                    ]})
 
 (defn run []
-  (let [state (init-state)
-        loop (Thread. (fn [] (do-loop state)))]
-    (.start loop)
+  (let [state (init-state)]
+    (future (do-loop state))
     (reset! input-keys {})))
 
 (defn stop

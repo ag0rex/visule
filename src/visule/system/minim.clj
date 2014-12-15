@@ -5,10 +5,16 @@
 
 (defn- get-fft-entity [band-no size]
   [(symbol (str "band" band-no))
-   {:pos {:x (* band-no (/ 800 27)) :y 50}
+   {:pos {:x (* band-no (/ 800 27))
+          :y (* band-no (/ 800 27))}
     :vel {:speed 0 :direction 0}
-    :size {:fn identity :value size}
-    :draw {:shape :square :color (Color. 200 200 0 100) :z 10000}}])
+    :size {:fn identity :value (/ size 2)}
+    :draw {:shape :circle
+           :color  (Color. (+ 200 (rand-int 50))
+                           (+ 150 (rand-int 100))
+                           (+ 200 (rand-int 50))
+                           (+ 100 (rand-int 0)))
+           :z 10000}}])
 
 (defn- apply-fn [state
                  {song :song
@@ -29,7 +35,7 @@
     ;; (println fft-ent)
     ;; (when (.isRange beat 0 5 6))
     
-    (let [ents (if (.isRange beat 1 2 2) (concat (take 1 gen-seq) fft-ents) fft-ents)]
+    (let [ents (if (.isRange beat 2 2 1) (concat (take 1 gen-seq) fft-ents) fft-ents)]
       {:merge-entities (into {} ents)
        :merge-systems {system-key (update-in system-map [:state :gen-seq] (partial drop 1))}})))
 
@@ -41,9 +47,9 @@
           fft (FFT. (.bufferSize song) (.sampleRate song))]
 
       (doto beat
-        (.setSensitivity 10))
+        (.setSensitivity 50))
 
-      (.logAverages fft 60 3)
+      (.logAverages fft 60 7)
       
       (println (.dectectSize beat))
       
