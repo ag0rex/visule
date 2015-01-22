@@ -22,11 +22,11 @@
       (.setSize 800 800)
       (.createBufferStrategy 2)
 
-      (.addMouseMotionListener
-       (proxy [MouseMotionListener] []
-         (mouseDragged [e])
-         (mouseMoved [e] (on-mousemoved (.getX e) (.getY e)))))
-      
+      ;; (.addMouseMotionListener
+      ;;  (proxy [MouseMotionListener] []
+      ;;    (mouseDragged [e])
+      ;;    (mouseMoved [e] (on-mousemoved (.getX e) (.getY e)))))
+
       (.addKeyListener
        (proxy [KeyListener] []
          (keyPressed [e]
@@ -49,20 +49,20 @@
                     ^java.awt.Graphics graphics]
   (.setColor graphics (get-color color entity))
   (case shape
-    :square (.fillRect graphics x y size size)
-    :circle (.fillOval graphics x y size size)))
+    :square (.fillRect graphics (- x (/ size 2)) (- y (/ size 2)) size size)
+    :circle (.fillOval graphics (- x (/ size 2)) (- y (/ size 2)) size size)))
 
 (defn- system-render [^java.awt.Frame frame drawable]
   (let [^java.awt.image.BufferStrategy buffer (.getBufferStrategy frame)
         ^java.awt.Graphics graphics (.getDrawGraphics buffer)]
-    
+
     (doseq [[_ obj] drawable]
       (draw-entity obj graphics))
-    
-    (.dispose graphics)
-    (.show buffer)
 
-    {}))
+    (.dispose graphics)
+    (.show buffer))
+
+  nil)
 
 (defn- filter-by-comp [objs comp-keyword]
   (filter (comp comp-keyword val) objs))

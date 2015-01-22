@@ -1,14 +1,12 @@
-(ns visule.system.size)
+(ns visule.system.size
+  (:require [visule.util :refer [filter-keys]]))
 
-(defn- filter-by-comp [objs comp-keyword]
-  (filter (comp comp-keyword val) objs))
+(defn- update-entity-size [state key]
+  (let [size-fn (get-in state [:entities key :size :fn])]
+    (update-in state [:entities key :size :value] size-fn)))
 
 (defn- system-size [state]
-  (let [update-size (fn [[key {{value :value size-fn :fn} :size :as entity}]]
-                      (let [new-size (size-fn value)]
-                        [key (assoc-in entity [:size :value] new-size)]))
-        drawable (filter-by-comp (:entities state) :draw)]
-    {:merge-entities (into {} (map update-size drawable))}))
+  (reduce update-entity-size state (filter-keys (:entities state) :size)))
 
 (defn- apply-fn [state _]
   (system-size state))

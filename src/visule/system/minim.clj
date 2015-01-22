@@ -1,43 +1,28 @@
 (ns visule.system.minim
   (:import (ddf.minim Minim)
-           (ddf.minim.analysis BeatDetect FFT)
-           (java.awt Color)))
+           (ddf.minim.analysis BeatDetect FFT)))
 
-(defn- get-fft-entity [band-no size]
-  [(symbol (str "band" band-no))
-   {:pos {:x (* band-no (/ 800 27))
-          :y (* band-no (/ 800 27))}
-    :vel {:speed 0 :direction 0}
-    :size {:fn identity :value (/ size 2)}
-    :draw {:shape :circle
-           :color  (Color. (+ 200 (rand-int 50))
-                           (+ 150 (rand-int 100))
-                           (+ 200 (rand-int 50))
-                           (+ 100 (rand-int 0)))
-           :z 10000}}])
+;; (defn- get-fft-entity [band-no size]
+;;   [(symbol (str "band" band-no))
+;;    {:pos {:x (* band-no (/ 800 27))
+;;           :y (* band-no (/ 800 27))}
+;;     :vel {:speed 0 :direction 0}
+;;     :size {:fn identity :value (/ size 2)}
+;;     :draw {:shape :circle
+;;            :color  (Color. (+ 100 (rand-int 50))
+;;                            (+ 10 (rand-int 100))
+;;                            (+ 20 (rand-int 50))
+;;                            (+ 100 (rand-int 0)))
+;;            :z 10000}}])
 
-(defn- apply-fn [state
-                 {song :song
-                  beat :beat
-                  fft :fft
-                  gen-seq :gen-seq
-                  system-key :system-key
-                  :as system-state}]
-
-  (.forward fft (.mix song))
-  
-  (.detect beat (.mix song))
-  
-  (let [system-map (-> state :systems system-key)
-        fft-ents (map #(get-fft-entity % (.getAvg fft %))
-                      (range 0 (.avgSize fft)))]
-
-    ;; (println fft-ent)
-    ;; (when (.isRange beat 0 5 6))
-    
-    (let [ents (if (.isRange beat 2 2 1) (concat (take 1 gen-seq) fft-ents) fft-ents)]
-      {:merge-entities (into {} ents)
-       :merge-systems {system-key (update-in system-map [:state :gen-seq] (partial drop 1))}})))
+(defn system-minim [state
+                    {song :song
+                     beat :beat
+                     fft :fft
+                     system-key :system-key
+                     :as system-state}]
+  (let [fft-values (vec (map #(.getAvg fft %) (range 0 (.avgSize fft))))]
+    (assoc-in state [:systems system-key :state :values] fft-values)))
 
 (defn init [song-file gen-fn system-key]
   (let [minim (Minim.)
@@ -50,13 +35,10 @@
         (.setSensitivity 50))
 
       (.logAverages fft 60 7)
-      
-      (println (.dectectSize beat))
-      
-      {:fn apply-fn
+
+      {:fn system-minim
        :state {:song song
                :beat beat
                :fft fft
-               :gen-seq (gen-fn)
                :system-key system-key}
        :stop-fn #(.close song)})))

@@ -1,7 +1,7 @@
 (ns visule.util)
 
-(defn filter-by-comp [objs comp-keyword]
-  (filter (comp comp-keyword val) objs))
+(defn filter-keys [entities pred]
+  (reduce (fn [acc x] (if (pred (val x)) (conj acc (key x)) acc)) '() entities))
 
 (defn remove-keys [map [k & ks]]
   (if ks

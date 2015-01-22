@@ -1,36 +1,62 @@
-+ apply systems on world state
+* Old ones
 
-+ add system init function
+** DONE apply systems on world state
+   CLOSED: [2015-01-09 Fri 07:23]
 
-+ system dependencies -> system state (stored in world state)
-+   e.g. put render frame in system state
-    note: system state should not change  
+** DONE system dependencies -> system state (stored in world state)
+   CLOSED: [2015-01-09 Fri 07:27]
 
-+ move systems to separate namespaces
+** DONE e.g. put render frame in system state
+   CLOSED: [2015-01-09 Fri 07:27]
 
-+ new size system
-+ new move system
-+ new render system
+** DONE note: system state should not change
+   CLOSED: [2015-01-09 Fri 07:27]
 
-+ collision to be part of the move component
+** DONE move systems to separate namespaces
+   CLOSED: [2015-01-09 Fri 07:27]
 
-- split regen system
-  - system for removal
-  - system for generation
+** DONE new size system
+   CLOSED: [2015-01-09 Fri 07:27]
 
-- return values for system functions
-  - decide on diff / new state
+** DONE new move system
+   CLOSED: [2015-01-09 Fri 07:27]
 
-- add protocol for systems
+** DONE new render system
+   CLOSED: [2015-01-09 Fri 07:27]
 
-- add records for components
+** DONE collision to be part of the move component
+   CLOSED: [2015-01-09 Fri 07:27]
 
-- event-based generation of entities
-  - mutable source of events
 
-- macro to add systems
-  - would allow injection of system key
+* DONE system for removal
+  CLOSED: [2015-01-20 Tue 23:12]
 
-- time-based generation of entities
-  + interval system
-  - timeout system
+* DONE new state to be returned by systems
+  CLOSED: [2015-01-20 Tue 07:54]
+** DONE decide on diff / new state
+   CLOSED: [2015-01-18 Sun 12:35]
+
+* TODO add records for components
+** TODO add protocol for systems
+
+* TODO event-based generation of entities
+** TODO mutable source of events
+
+* TODO macro to add systems
+** TODO would allow injection of system key
+
+* TODO time-based generation of entities
+** DONE interval system
+   CLOSED: [2015-01-09 Fri 07:43]
+** TODO  timeout system
+
+* TODO time-based application of systems
+** TODO apply a system each couple of seconds
+*** e.g. a rotation system
+
+* TODO performance benchmarking
+
+* TODO add delta to systems update function
+
+* DONE add one unit test
+  CLOSED: [2015-01-20 Tue 07:55]

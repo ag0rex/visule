@@ -1,5 +1,5 @@
 (ns visule.system.move
-  (:require [visule.util :refer [filter-by-comp]]))
+  (:require [visule.util :refer [filter-keys]]))
 
 (defn- signed-rand [upper]
   (let [sign (rand-int 2)
@@ -8,9 +8,8 @@
       (* cur -1)
       cur)))
 
-(defn- reflect-with-wobble [cur axis]
-  (let [wobble (signed-rand 11)
-        new-angle (case axis
+(defn- reflect-with-wobble [cur axis wobble]
+  (let [new-angle (case axis
                     :x (- 180 cur)
                     :y (- cur)
                     :xy (- cur 180))]
@@ -26,16 +25,14 @@
 (defn- deg->rad [deg]
   (* deg (/ Math/PI 180)))
 
-(defn- move [{{x :x y :y} :pos {speed :speed direction :direction} :vel :as obj}]
+(defn- move [{x :x y :y}
+             {speed :speed direction :direction}]
   (let [[dx dy] (vel-to-dxy speed (deg->rad direction))]
-    {:pos {:x (+ dx x) :y (+ y dy)}}))
+    {:x (+ dx x)
+     :y (+ y dy)}))
 
-(defn- collide [{{direction :direction} :vel :as obj} axis]
-  (let [reflected (update-in obj [:vel :direction] #(reflect-with-wobble % axis))]
-    (merge reflected (move reflected))))
-
-(defn- hit-bounds? [{{x :x y :y} :pos
-                     {size :value} :size}
+(defn- hit-bounds? [{x :x y :y}
+                    {size :value}
                     {width :width height :height}]
   (let [x-hit (or (>= 0 x)
                   (>= x (- width size)))
@@ -46,19 +43,36 @@
      x-hit :x
      y-hit :y)))
 
-(defn- update [{{collides :collides} :vel :as entity}]
-  (let [moved (merge entity (move entity))]
-    (if collides
-      (if-let [axis (hit-bounds? moved {:width 800 :height 800})]
-        (collide entity axis)
-        moved)
-      moved)))
+(defn- collide
+  "Return new direction after collision."
+  [pos dir collides size]
+  (when collides
+    (when-let [axis (hit-bounds? pos size {:width 800 :height 800})]
+      (reflect-with-wobble dir axis 0))))
 
-(defn- system-move [state]
-  (let [update-map-entry (fn [[key entity]]
-                           [key (update entity)])
-        movable (filter-by-comp (:entities state) :vel)]
-    {:merge-entities (into {} (map update-map-entry movable))}))
+(defn- update [position
+               {direction :direction
+                collides :collides :as move-component}
+               size]
+  (let [new-position (move position move-component)]
+    (if-let [new-direction (collide new-position direction collides size)]
+      {:position new-position :direction new-direction}
+      {:position new-position :direction direction})))
+
+(defn- update-entity-position [state key]
+  (let [entity (get-in state [:entities key])
+        position (:pos entity)
+        move-component (:move entity)
+        size-comp (:size entity)
+        {new-position :position
+         new-direction :direction} (update position move-component size-comp)]
+    (-> state
+        (assoc-in [:entities key :pos] new-position)
+        (assoc-in [:entities key :move :direction] new-direction))))
+
+(defn system-move [state]
+  (let [movables (filter-keys (:entities state) :move)]
+    (reduce update-entity-position state movables)))
 
 (defn- apply-fn [state system-state]
   (system-move state))
