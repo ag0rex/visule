@@ -21,6 +21,10 @@
                      fft :fft
                      system-key :system-key
                      :as system-state}]
+
+  (.forward fft (.mix song))
+  (.detect beat (.mix song))
+
   (let [fft-values (vec (map #(.getAvg fft %) (range 0 (.avgSize fft))))]
     (assoc-in state [:systems system-key :state :values] fft-values)))
 

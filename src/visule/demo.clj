@@ -7,6 +7,7 @@
             visule.system.render
             visule.system.interval
             visule.system.minim
+            visule.system.one
             [clojure.tools.namespace.repl :refer [refresh refresh-all]])
   (:import (java.awt Color))
   ;; (:gen-class)
@@ -92,28 +93,28 @@
          :size {:fn identity :value 100}
          :draw {:shape :circle :color (Color. 0 0 0 20) :z 10000}}})
 
-;; (defn one []
-;;   {:one
-;;    {:pos {:x 370
-;;           :y 370}
-;;     :move {:speed 0
-;;            :direction 270
-;;            :collides false}
-;;     :size {:fn identity
-;;            :value 140}
-;;     :draw {:shape :circle
-;;            :color (Color. 80 80 10)
-;;            :z 1}}})
+(defn one []
+  {:one
+   {:pos {:x 400
+          :y 400}
+    :move {:speed 0
+           :direction 20
+           :collides true}
+    :size {:fn identity
+           :value 140}
+    :draw {:shape :circle
+           :color (Color. 200 200 200)
+           :z 1}}})
 
 (defn init-state []
   {:loop-state true
-   :frame-time (/ 1000 60)
+   :frame-time (/ 1000 30)
    :entities (merge
               boo
-              ;; (one)
+              (one)
               {:board {:pos {:x 400 :y 400}
                        :size {:fn identity :value 800}
-                       :draw {:shape :square :color (Color. 20 10 30 150) :z 0}}})
+                       :draw {:shape :square :color (Color. 20 10 30) :z 0}}})
    :systems {:input (visule.system.input/init input-keys)
              :size (visule.system.size/init)
              :move (visule.system.move/init)
@@ -121,9 +122,13 @@
                     #(and (not= 800 (:value (:size %)))
                           (< (:value (:size %)) 0)))
              :render (visule.system.render/init handlers)
-             :interval (visule.system.interval/init 100 yellow-magenta :interval)
-             :minim (visule.system.minim/init "/Users/andrei/Music/lilly.mp3" yellow-magenta :minim)}
-   :systems-order [:input :render :interval :size :move :kill :minim]})
+             ;;:interval (visule.system.interval/init 100 yellow-magenta :interval)
+             :minim (visule.system.minim/init "/Users/andrei/Music/lilly.mp3" yellow-magenta :minim)
+             :one (visule.system.one/init)
+             }
+   :systems-order [:input :render ;;:interval
+                   :size :move :kill :minim :one
+                   ]})
 
 (defn run []
   (let [state (init-state)]
