@@ -9,9 +9,7 @@
             visule.system.minim
             visule.system.one
             [clojure.tools.namespace.repl :refer [refresh refresh-all]])
-  (:import (java.awt Color))
-  ;; (:gen-class)
-  )
+  (:import (java.awt Color)))
 
 (def input-keys (atom {}))
 (def input-mouse (atom {}))
@@ -87,34 +85,31 @@
      :draw {:shape :circle :color (Color. (rand-int 255) (rand-int 255) (rand-int 255) 150) :z 100000}}]
    (lazy-seq (random-shapes))))
 
-(def boo
-  {:fou {:pos {:x 450 :y 450}
-         :move {:speed 0 :direction 0}
-         :size {:fn identity :value 100}
-         :draw {:shape :circle :color (Color. 0 0 0 20) :z 10000}}})
-
 (defn one []
-  {:one
-   {:pos {:x 400
-          :y 400}
-    :move {:speed 0
-           :direction 20
-           :collides true}
-    :size {:fn identity
-           :value 140}
-    :draw {:shape :circle
-           :color (Color. 200 200 200)
-           :z 1}}})
+  (into {}
+        (for [x (range 0 10)
+              y (range 0 10)]
+          {(keyword (str "one-" x y))
+           {:pos {:x (* x 100)
+                  :y (* y 100)}
+            :move {:speed 0
+                   :direction 20
+                   :collides true}
+            :size {:fn #(if (< 5 %) (- % 5) %)
+                   :value 140}
+            :draw {:shape :circle
+                   :color (Color. 200 200 22)
+                   :z 1}
+            :one true}})))
 
 (defn init-state []
   {:loop-state true
-   :frame-time (/ 1000 30)
+   :frame-time (/ 1000 60)
    :entities (merge
-              boo
               (one)
               {:board {:pos {:x 400 :y 400}
                        :size {:fn identity :value 800}
-                       :draw {:shape :square :color (Color. 20 10 30) :z 0}}})
+                       :draw {:shape :square :color (Color. 120 30 100) :z 0}}})
    :systems {:input (visule.system.input/init input-keys)
              :size (visule.system.size/init)
              :move (visule.system.move/init)

@@ -1,4 +1,5 @@
-* Old ones
+* DONE Old ones
+  CLOSED: [2015-02-07 Sat 12:49]
 
 ** DONE apply systems on world state
    CLOSED: [2015-01-09 Fri 07:23]
